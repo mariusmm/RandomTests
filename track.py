@@ -1,6 +1,6 @@
 #!/bin/python3
 #
-# Example from https://rhodesmill.org/skyfielatd/earth-satellites.html
+# Example from https://rhodesmill.org/skyfield/earth-satellites.html
 # 
 # Data from https://celestrak.com/satcat/tle.php?INTDES=2020-061
 # 1 46292U 20061W   21073.15035660  .00000684  00000-0  45489-4 0  9993
@@ -9,6 +9,8 @@
 import sys, webbrowser 
 from skyfield.api import load, wgs84
 from skyfield.api import EarthSatellite
+from datetime import datetime, timedelta, timezone
+
 
 def decdeg2dms(dd):
     negative = dd < 0
@@ -24,6 +26,14 @@ def decdeg2dms(dd):
             seconds = -seconds
     return (degrees,minutes,seconds)
 
+
+def getCoords(t):
+    geocentric = satellite.at(t)
+    subpoint = wgs84.subpoint(geocentric)
+    return (subpoint.latitude.degrees, subpoint.longitude.degrees)
+
+
+
 ts = load.timescale()
 
 line1 = '1 46292U 20061W   21073.15035660  .00000684  00000-0  45489-4 0  9993'
@@ -32,31 +42,18 @@ line2 = '2 46292  97.4953 148.5306 0004209  39.0632 321.0901 15.10390241 28942'
 satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
 print(satellite)
 
-t = ts.now()
-geocentric = satellite.at(t)
-print(geocentric.position.km)
 
-subpoint = wgs84.subpoint(geocentric)
-print('Latitude:', subpoint.latitude)
-print('Longitude:', subpoint.longitude)
-print('Elevation (km):', int(subpoint.elevation.m)/1000)  
+# Calculate position at t = now
+[lat,log] = getCoords(ts.now())
+map_string = '' + str(lat) + ',' + str(log)
+print(map_string)
+webbrowser.open('https://www.google.com/maps/place/' + map_string) 
 
-[latd,latm,lats] = decdeg2dms(subpoint.latitude.degrees)
-[longd, longm, longs] = decdeg2dms(subpoint.longitude.degrees)
-
-if int(latd) > 0:
-    NS = 'N'
-else:
-    NS = 'S'
-        
-if int(longd) > 0:
-    EW = 'E'
-else:
-    EW = 'W'
-    
-# Prepare string for google maps
-map_string = '' + str(abs(int(latd))) + '°' + str(int(latm)) + '\'' + str(lats) + '\"' + NS + '+' + str(abs(int(longd))) + '°' + str(int(longm)) + '\'' + str(longs) + '\"' + EW
-
-#print(map_string)
-
+# Calculate position at t = now + 5 minutes
+step = timedelta(minutes = 5)
+t = ts.from_datetime(datetime.now(timezone.utc) + step)
+[lat1h,log1h] = getCoords(t)
+#print (lat1h, log1h)
+map_string = '' + str(lat1h) + ',' + str(log1h)
+print(map_string)
 webbrowser.open('https://www.google.com/maps/place/' + map_string) 

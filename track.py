@@ -34,19 +34,34 @@ def getCoords(t):
 
 
 
+
+
+#line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
+#line2 = '2 46292  97.4950 149.8276 0004086  35.3374 324.8125 15.10393027 29141'
+#satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+
 ts = load.timescale()
 
-line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
-line2 = '2 46292  97.4950 149.8276 0004086  35.3374 324.8125 15.10393027 29141'
+# Satellite ID 
+n = 46292
+url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+filename = 'tle-CATNR-{}.txt'.format(n)
+satellites = load.tle_file(url, filename=filename, reload=False)
+print(satellites)
+print(satellites[0].epoch.utc_jpl())
 
+sat_epoch = satellites[0].epoch
 
+# If TLE data is too old, try to update it
+if abs(sat_epoch - ts.now()) > 14:
+        satellites = load.tle_file(url, filename=filename, reload=True)
 
-
-satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
-print(satellite)
+satellite = satellites[0]
 
 
 # Calculate position at t = now
+
+
 [lat,log, ele] = getCoords(ts.now())
 map_string = '' + str(lat) + ',' + str(log)
 print(map_string)
@@ -76,3 +91,5 @@ t = ts.from_datetime(datetime.now(timezone.utc) + step)
 map_string = '' + str(lat1h) + ',' + str(log1h)
 print(map_string)
 print('Elevation (km):', ele/1000)
+
+

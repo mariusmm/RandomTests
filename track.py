@@ -30,7 +30,7 @@ def decdeg2dms(dd):
 def getCoords(t):
     geocentric = satellite.at(t)
     subpoint = wgs84.subpoint(geocentric)
-    return (subpoint.latitude.degrees, subpoint.longitude.degrees)
+    return (subpoint.latitude.degrees, subpoint.longitude.degrees, subpoint.elevation.m)  
 
 
 
@@ -44,16 +44,26 @@ print(satellite)
 
 
 # Calculate position at t = now
-[lat,log] = getCoords(ts.now())
+[lat,log, ele] = getCoords(ts.now())
 map_string = '' + str(lat) + ',' + str(log)
 print(map_string)
-webbrowser.open('https://www.google.com/maps/place/' + map_string) 
+print('Elevation (km):', ele/1000)  
+#webbrowser.open('https://www.google.com/maps/place/' + map_string) 
 
 # Calculate position at t = now + 5 minutes
 step = timedelta(minutes = 5)
 t = ts.from_datetime(datetime.now(timezone.utc) + step)
-[lat1h,log1h] = getCoords(t)
-#print (lat1h, log1h)
+[lat1h,log1h, ele1h] = getCoords(t)
 map_string = '' + str(lat1h) + ',' + str(log1h)
 print(map_string)
-webbrowser.open('https://www.google.com/maps/place/' + map_string) 
+print('Elevation (km):', ele/1000)
+#webbrowser.open('https://www.google.com/maps/place/' + map_string)
+
+
+# Calculate position at t = now + 95.3 minutes
+step = timedelta(minutes = 95.3) #, seconds=18)
+t = ts.from_datetime(datetime.now(timezone.utc) + step)
+[lat1h,log1h,ele1h] = getCoords(t)
+map_string = '' + str(lat1h) + ',' + str(log1h)
+print(map_string)
+print('Elevation (km):', ele/1000)

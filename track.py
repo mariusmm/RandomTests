@@ -36,8 +36,11 @@ def getCoords(t):
 
 ts = load.timescale()
 
-line1 = '1 46292U 20061W   21073.15035660  .00000684  00000-0  45489-4 0  9993'
-line2 = '2 46292  97.4953 148.5306 0004209  39.0632 321.0901 15.10390241 28942'
+line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
+line2 = '2 46292  97.4950 149.8276 0004086  35.3374 324.8125 15.10393027 29141'
+
+
+
 
 satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
 print(satellite)
@@ -48,7 +51,13 @@ print(satellite)
 map_string = '' + str(lat) + ',' + str(log)
 print(map_string)
 print('Elevation (km):', ele/1000)  
-#webbrowser.open('https://www.google.com/maps/place/' + map_string) 
+webbrowser.open('https://www.google.com/maps/place/' + map_string) 
+
+
+#show position in openstreetmap
+map_string = 'mlat=' + str(lat)+ '&mlon=' + str(log) + '&zoom=7&layers=N'
+print(map_string)
+webbrowser.open('http://www.openstreetmap.org/?' + map_string)
 
 # Calculate position at t = now + 5 minutes
 step = timedelta(minutes = 5)

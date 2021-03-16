@@ -7,6 +7,7 @@
 # 2 46292  97.4953 148.5306 0004209  39.0632 321.0901 15.10390241 28942
 
 import sys, webbrowser 
+from skyfield.almanac import dark_twilight_day
 from skyfield.api import load, wgs84
 from skyfield.api import EarthSatellite
 from datetime import datetime, timedelta, timezone
@@ -33,7 +34,41 @@ def getCoords(t):
     return (subpoint.latitude.degrees, subpoint.longitude.degrees, subpoint.elevation.m)  
 
 
+def visibility(satellite, time, location=None):
+    '''
+    Say whether the satellite is visible
+    '''
 
+    if location is None:
+        # Using OAdM ground station location by default
+        location = wgs84.latlon(42.05138889, 0.72944444, 1620)
+
+    difference = satellite - location
+    topocentric = difference.at(time)
+    alt, az, distance = topocentric.altaz()
+
+    eph = load('de421.bsp')
+    sunlit = satellite.at(time).is_sunlit(eph)
+
+    solar_elevation = dark_twilight_day(eph, location)
+    sun = solar_elevation(time)
+
+    if alt.degrees < 0:
+        print(f'{satellite.name} is below the horizon')
+
+    elif sun == 4:
+        print(f'{satelltie.name} is above the horizon during day time')
+
+    elif not sunlit:
+        print(f'{satellite.name} is above the horizon, but in Earth shadow')
+
+    elif sun > 0:
+        print(f'{satellite.name} is above the horizon, during twilight')
+
+    else:
+        print(f'{satellite.name} is visible in the night sky!')
+
+    print('Azimuth:', az, 'Elevation:', alt, f'Distance (km): {distance.km:.1f}')
 
 
 #line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
@@ -61,11 +96,12 @@ satellite = satellites[0]
 
 # Calculate position at t = now
 
-
-[lat,log, ele] = getCoords(ts.now())
+now = ts.now()
+[lat,log, ele] = getCoords(now)
 map_string = '' + str(lat) + ',' + str(log)
 print(map_string)
 print('Elevation (km):', ele/1000)  
+visibility(satellite, now)
 webbrowser.open('https://www.google.com/maps/place/' + map_string) 
 
 

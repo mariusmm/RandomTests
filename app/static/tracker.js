@@ -50,7 +50,7 @@ function update() {
           map: map
         });
       }
-      tooltip_data = "<div> Lat: ".concat(la)+" Long: ".concat(lo)+" Elevation: ".concat(elevation)+"</div>";
+      tooltip_data = "<div> Lats: ".concat(la)+" Long: ".concat(lo)+" Elevation: ".concat(elevation)+"</div>";
       infowindow = new google.maps.InfoWindow({
         content: tooltip_data,
       });

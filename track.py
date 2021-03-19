@@ -88,6 +88,7 @@ satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
 #filename = 'tle-CATNR-{}.txt'.format(n)
 #satellites = load.tle_file(url, filename=filename, reload=False)
 #satellite = satellites[0]
+#satellite = satellites[0]
 #print(satellites)
 print(satellite.epoch.utc_jpl())
 
@@ -96,6 +97,11 @@ sat_epoch = satellite.epoch
 # If TLE data is too old, try to update it
 if abs(sat_epoch - ts.now()) > 14:
         satellites = load.tle_file(url, filename=filename, reload=True)
+
+
+
+# Testing output of create_tle
+# satellite = EarthSatellite(*create_tle(), ts)
 
 
 # Calculate position at t = now

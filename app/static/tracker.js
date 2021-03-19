@@ -3,6 +3,8 @@ let la = 41;
 let lo = 1;
 let markers = [];
 let previous = [];
+let delay_ns = 5000;
+let map_zoom = 8;
 
 function addMarker(location) {
     const marker = new google.maps.Marker({
@@ -17,8 +19,8 @@ function addMarker(location) {
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: -34, lng: 150 },
-        zoom: 4,
+        center: { lat: la, lng: lo },
+        zoom: map_zoom,
     });
 }
 
@@ -49,4 +51,4 @@ var intervalId = window.setInterval(function() {
         geodesic: true,
         map: map
     });
-}, 100);
+}, delay_ns);

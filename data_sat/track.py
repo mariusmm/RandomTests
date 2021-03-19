@@ -71,27 +71,37 @@ def visibility(satellite, time, location=None):
     print('Azimuth:', az, 'Elevation:', alt, f'Distance (km): {distance.km:.1f}')
 
 
+ts = load.timescale()
+
 #line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
 #line2 = '2 46292  97.4950 149.8276 0004086  35.3374 324.8125 15.10393027 29141'
 #satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
 
-ts = load.timescale()
+line1 = '1 00000U 00000A   21079.43671296  .00000000  00000-0  15378-4 0  08'
+line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
+satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+
 
 # Satellite ID 
-n = 46292
-url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
-filename = 'tle-CATNR-{}.txt'.format(n)
-satellites = load.tle_file(url, filename=filename, reload=False)
-print(satellites)
-print(satellites[0].epoch.utc_jpl())
+#n = 46292
+#url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+#filename = 'tle-CATNR-{}.txt'.format(n)
+#satellites = load.tle_file(url, filename=filename, reload=False)
+#satellite = satellites[0]
+#satellite = satellites[0]
+#print(satellites)
+print(satellite.epoch.utc_jpl())
 
-sat_epoch = satellites[0].epoch
+sat_epoch = satellite.epoch
 
 # If TLE data is too old, try to update it
 if abs(sat_epoch - ts.now()) > 14:
         satellites = load.tle_file(url, filename=filename, reload=True)
 
-satellite = satellites[0]
+
+
+# Testing output of create_tle
+# satellite = EarthSatellite(*create_tle(), ts)
 
 
 # Calculate position at t = now
@@ -106,26 +116,26 @@ webbrowser.open('https://www.google.com/maps/place/' + map_string)
 
 
 #show position in openstreetmap
-map_string = 'mlat=' + str(lat)+ '&mlon=' + str(log) + '&zoom=7&layers=N'
-print(map_string)
-webbrowser.open('http://www.openstreetmap.org/?' + map_string)
+#map_string = 'mlat=' + str(lat)+ '&mlon=' + str(log) + '&zoom=7&layers=N'
+#print(map_string)
+#webbrowser.open('http://www.openstreetmap.org/?' + map_string)
 
 # Calculate position at t = now + 5 minutes
-step = timedelta(minutes = 5)
-t = ts.from_datetime(datetime.now(timezone.utc) + step)
-[lat1h,log1h, ele1h] = getCoords(t)
-map_string = '' + str(lat1h) + ',' + str(log1h)
-print(map_string)
-print('Elevation (km):', ele/1000)
+#step = timedelta(minutes = 5)
+#t = ts.from_datetime(datetime.now(timezone.utc) + step)
+#[lat1h,log1h, ele1h] = getCoords(t)
+#map_string = '' + str(lat1h) + ',' + str(log1h)
+#print(map_string)
+#print('Elevation (km):', ele/1000)
 #webbrowser.open('https://www.google.com/maps/place/' + map_string)
 
 
 # Calculate position at t = now + 95.3 minutes
-step = timedelta(minutes = 95.3) #, seconds=18)
-t = ts.from_datetime(datetime.now(timezone.utc) + step)
-[lat1h,log1h,ele1h] = getCoords(t)
-map_string = '' + str(lat1h) + ',' + str(log1h)
-print(map_string)
-print('Elevation (km):', ele/1000)
+#step = timedelta(minutes = 95.3) #, seconds=18)
+#t = ts.from_datetime(datetime.now(timezone.utc) + step)
+#[lat1h,log1h,ele1h] = getCoords(t)
+#map_string = '' + str(lat1h) + ',' + str(log1h)
+#print(map_string)
+#print('Elevation (km):', ele/1000)
 
 

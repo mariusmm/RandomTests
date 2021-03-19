@@ -76,17 +76,24 @@ def visibility(satellite, time, location=None):
 
 sleep_time = 5
 print("Updating data every", sleep_time, "seconds")
+
 ts = load.timescale()
-#line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
-#line2 = '2 46292  97.4950 149.8276 0004086  35.3374 324.8125 15.10393027 29141'
-#satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+
+
+## Using preliminary TLE from OC
+
+line1 = '1 00000U 00000A   21079.43671296  .00000000  00000-0  15378-4 0  08'
+line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
+satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+
+## When observational TLE are publised, use the following lines 
 
 # Satellite ID 
 n = 46292
-url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
-filename = 'tle-CATNR-{}.txt'.format(n)
-satellites = load.tle_file(url, filename=filename, reload=False)
-satellite = satellites[0]
+#url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+#filename = 'tle-CATNR-{}.txt'.format(n)
+#satellites = load.tle_file(url, filename=filename, reload=False)
+#satellite = satellites[0]
 #print(satellite)
 #print(satellite.epoch.utc_jpl())
 
@@ -94,11 +101,11 @@ sat_epoch = satellite.epoch
 last_try = ts.utc(2000)
 
 # If TLE data is too old, try to update it
-if abs(sat_epoch - ts.now()) > 14:
-    # If already tried today, skip
-    if abs(ts.now() - last_try) > 1:
-        satellites = load.tle_file(url, filename=filename, reload=True)
-        last_try = ts.now()
+#if abs(sat_epoch - ts.now()) > 14:
+    ## If already tried today, skip
+    #if abs(ts.now() - last_try) > 1:
+        #satellites = load.tle_file(url, filename=filename, reload=True)
+        #last_try = ts.now()
 
 # Calculate position at t = now
 while True:

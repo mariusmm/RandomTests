@@ -93,6 +93,8 @@ if abs(sat_epoch - ts.now()) > 14:
 
 satellite = satellites[0]
 
+# Testing output of create_tle
+# satellite = EarthSatellite(*create_tle(), ts)
 
 # Calculate position at t = now
 

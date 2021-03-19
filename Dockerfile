@@ -16,13 +16,10 @@ RUN useradd tracker && \
 
 FROM base as install-pyramid
 
-COPY app ${CWS}
-
-RUN nohup ${VENV}/bin/python3 /home/tracker/jsongenerator.py &
 
 WORKDIR /home/tracker
 
-#COPY app ${CWS}
+COPY app ${CWS}
 COPY development.ini .
 COPY setup.py .
 

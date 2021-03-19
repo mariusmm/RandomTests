@@ -1,20 +1,20 @@
 let map;
-let latitude = 41;
-let longitude = 1;
+let latitude = 0;
+let longitude = 0;
 let elevation = 0;
 let markers = [];
 let previous = [];
 let delay_ns = 5000;
-let map_zoom = 8;
+let map_zoom = 5;
 
-
+var newPoint = null;
+var lastPoint = null;
 var marker = null;
 var line = null;
 var infowindow = null;
 var icon = null;
 
-var tooltip_data = "<div> Latitude: ".concat(latitude) + " Longitude: ".concat(longitude) + " Elevation: ".concat(elevation) + "</div>";
-
+var tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</div>";
 
 
 function initMap() {
@@ -31,22 +31,19 @@ function initMap() {
 }
 
 
-
 function update() {
+    updateCoords();
     var newPoint = new google.maps.LatLng(latitude, longitude);
-
-
     if (marker) {
         marker.setPosition(newPoint);
     } else {
 
-        marker = new google.maps.Marker({
-            icon: icon,
-            position: newPoint,
-            map: map
-        });
+    marker = new google.maps.Marker({
+        icon: icon,
+        position: newPoint,
+        map: map
+    });
     }
-    tooltip_data = "<div> Lats: ".concat(latitude) + " Long: ".concat(longitude) + " Elevation: ".concat(elevation) + "</div>";
     infowindow = new google.maps.InfoWindow({
         content: tooltip_data,
     });
@@ -65,10 +62,11 @@ function update() {
             strokeWeight: 1,
             geodesic: true,
             map: map
-        });
+    });
     } else {
+        console.log(latitude);
         line = new google.maps.Polyline({
-            path: [newPoint, newPoint],
+            path: [newPoint, lastPoint], 
             strokeColor: "#FF0000",
             strokeOpacity: 1.0,
             strokeWeight: 1,
@@ -78,11 +76,9 @@ function update() {
     }
 
     map.setCenter(newPoint);
-
+    
     lastPoint = newPoint;
-
-    updateCoords();
-
+    
     setTimeout(update, delay_ns);
 }
 
@@ -97,9 +93,11 @@ function updateCoords() {
             latitude = data['satellites'][0]['lat'];
             longitude = data['satellites'][0]['long'];
             elevation = data['satellites'][0]['elevation'];
+            tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</div>";
         },
-        error: function() {
-            alert("There was a problem with the server.  Try again soon!");
+            error: function() {
+            alert("There was a problem with the server. Try again soon!");
         }
     });
+
 }

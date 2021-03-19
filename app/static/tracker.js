@@ -1,19 +1,19 @@
 let map;
 let la = 41;
 let lo = 1;
+let elevation = 0;
 let markers = [];
 let previous = [];
 let delay_ns = 5000;
 let map_zoom = 8;
 
-function addMarker(location) {
-    const marker = new google.maps.Marker({
-        position: location,
-        map: map,
-    });
-    markers.push(marker);
 
-}
+var marker = null;
+var line = null;
+var infowindow = null;
+var icon = null;
+
+var tooltip_data = "<div> Lat: ".concat(la)+" Long: ".concat(lo)+" Elevation: ".concat(elevation)+"</div>";
 
 
 
@@ -22,33 +22,76 @@ function initMap() {
         center: { lat: la, lng: lo },
         zoom: map_zoom,
     });
+    icon = {
+        url: "static/satellite.png", // url
+        scaledSize: new google.maps.Size(50, 50), // scaled size
+        anchor: new google.maps.Point(25, 25),
+    };
+    update();
 }
 
-function updateMap(la, lo) {
-    map.setCenter(new google.maps.LatLng(la, lo));
 
 
 
-    if (markers.length > 0) {
-        var previous = markers.slice(-1).pop()
-        previous.setMap(null);
-    }
 
-    addMarker(new google.maps.LatLng(la, lo));
-}
-var intervalId = window.setInterval(function() {
-    /// call your function here
-    lo2 = lo
-    lo = lo + 1;
+function update() {
+    var newPoint = new google.maps.LatLng(la, lo);
+  
 
-    updateMap(la, lo);
 
-    var line = new google.maps.Polyline({
-        path: [new google.maps.LatLng(la, lo), new google.maps.LatLng(la, lo2)],
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 1,
-        geodesic: true,
-        map: map
+      if (marker) {
+        marker.setPosition(newPoint);
+      }
+      else {
+
+        marker = new google.maps.Marker({
+          icon: icon,
+          position: newPoint,
+          map: map
+        });
+      }
+      tooltip_data = "<div> Lat: ".concat(la)+" Long: ".concat(lo)+" Elevation: ".concat(elevation)+"</div>";
+      infowindow = new google.maps.InfoWindow({
+        content: tooltip_data,
+      });
+      marker.addListener("mouseover", () => {
+        infowindow.open(map, marker);
+      });
+      marker.addListener('mouseout', function() {
+        infowindow.close();
     });
-}, delay_ns);
+
+      if (line) {
+        line = new google.maps.Polyline({
+            path: [newPoint, lastPoint],
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 1,
+            geodesic: true,
+            map: map
+        });
+      } else {
+        line = new google.maps.Polyline({
+            path: [newPoint, newPoint],
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 1,
+            geodesic: true,
+            map: map
+        });
+      }
+
+      map.setCenter(newPoint);
+
+      lastPoint = newPoint;
+
+      lo = lo + 1;
+
+
+  
+  
+    // Call the autoUpdate() function every 5 seconds
+    setTimeout(update, delay_ns);
+  }
+
+  

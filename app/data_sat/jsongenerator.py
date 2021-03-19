@@ -20,7 +20,7 @@
 }
 
 '''
-
+import os
 import time
 import sys
 from skyfield.almanac import dark_twilight_day
@@ -58,7 +58,7 @@ def visibility(satellite, time, location=None):
         print(f'{satellite.name} is below the horizon')
 
     elif sun == 4:
-        print(f'{satelltie.name} is above the horizon during day time')
+        print(f'{satellite.name} is above the horizon during day time')
 
     elif not sunlit:
         print(f'{satellite.name} is above the horizon, but in Earth shadow')
@@ -73,50 +73,51 @@ def visibility(satellite, time, location=None):
 
 
 
-sleep_time = 5
-print("Updating data every", sleep_time, "seconds")
-ts = load.timescale()
-#line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
-#line2 = '2 46292  97.4950 149.8276 0004086  35.3374 324.8125 15.10393027 29141'
-#satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+def run():
+    sleep_time = 5
+    print("Updating data every", sleep_time, "seconds")
+    ts = load.timescale()
+    #line1 = '1 46292U 20061W   21074.47535270  .00000801  00000-0  52577-4 0  9998'
+    #line2 = '2 46292  97.4950 149.8276 0004086  35.3374 324.8125 15.10393027 29141'
+    #satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
 
-# Satellite ID 
-n = 46292
-url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
-filename = 'tle-CATNR-{}.txt'.format(n)
-satellites = load.tle_file(url, filename=filename, reload=False)
-satellite = satellites[0]
-#print(satellite)
-#print(satellite.epoch.utc_jpl())
+    # Satellite ID 
+    n = 46292
+    url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+    filename = 'tle-CATNR-{}.txt'.format(n)
+    satellites = load.tle_file(url, filename=filename, reload=False)
+    satellite = satellites[0]
+    #print(satellite)
+    #print(satellite.epoch.utc_jpl())
 
-sat_epoch = satellite.epoch
-last_try = ts.utc(2000)
+    sat_epoch = satellite.epoch
+    last_try = ts.utc(2000)
 
-# If TLE data is too old, try to update it
-if abs(sat_epoch - ts.now()) > 14:
-    # If already tried today, skip
-    if abs(ts.now() - last_try) > 1:
-        satellites = load.tle_file(url, filename=filename, reload=True)
-        last_try = ts.now()
-
-# Calculate position at t = now
-while True:
     # If TLE data is too old, try to update it
     if abs(sat_epoch - ts.now()) > 14:
+        # If already tried today, skip
         if abs(ts.now() - last_try) > 1:
             satellites = load.tle_file(url, filename=filename, reload=True)
             last_try = ts.now()
-    
-    now = ts.now()
-    [lat,log, ele] = getCoords(satellite, now)
-    map_string = '' + str(lat) + ', ' + str(log)
-    #print(map_string)
-    #print('Elevation (km):', ele/1000)   
-    json_data = "{\"satellites\":[{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
-    json_data += "{}]}\r\n"
-    #print (json_data)
-    f = open('satellites.json','w')
-    f.write(json_data);
-    f.close()
-    time.sleep(sleep_time)
+
+    # Calculate position at t = now
+    while True:
+        # If TLE data is too old, try to update it
+        if abs(sat_epoch - ts.now()) > 14:
+            if abs(ts.now() - last_try) > 1:
+                satellites = load.tle_file(url, filename=filename, reload=True)
+                last_try = ts.now()
+
+        now = ts.now()
+        [lat,log, ele] = getCoords(satellite, now)
+        map_string = '' + str(lat) + ', ' + str(log)
+        #print(map_string)
+        #print('Elevation (km):', ele/1000)   
+        json_data = "{\"satellites\":[{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
+        json_data += "{}]}\r\n"
+        #print (json_data)
+        f = open('app/static/satellites.json','w')
+        f.write(json_data)
+        f.close()
+        time.sleep(sleep_time)
 

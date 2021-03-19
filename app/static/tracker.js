@@ -1,6 +1,6 @@
 let map;
-let la = 41;
-let lo = 1;
+let latitude = 41;
+let longitude = 1;
 let elevation = 0;
 let markers = [];
 let previous = [];
@@ -13,55 +13,51 @@ var line = null;
 var infowindow = null;
 var icon = null;
 
-var tooltip_data = "<div> Lat: ".concat(la)+" Long: ".concat(lo)+" Elevation: ".concat(elevation)+"</div>";
+var tooltip_data = "<div> Latitude: ".concat(latitude) + " Longitude: ".concat(longitude) + " Elevation: ".concat(elevation) + "</div>";
 
 
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: la, lng: lo },
+        center: { lat: latitude, lng: longitude },
         zoom: map_zoom,
     });
     icon = {
-        url: "static/satellite.png", // url
-        scaledSize: new google.maps.Size(50, 50), // scaled size
-        anchor: new google.maps.Point(25, 25),
+        url: "static/enxaneta.png",
+        scaledSize: new google.maps.Size(80, 80),
+        anchor: new google.maps.Point(40, 40),
     };
     update();
 }
 
 
 
-
-
 function update() {
-    var newPoint = new google.maps.LatLng(la, lo);
-  
+    var newPoint = new google.maps.LatLng(latitude, longitude);
 
 
-      if (marker) {
+    if (marker) {
         marker.setPosition(newPoint);
-      }
-      else {
+    } else {
 
         marker = new google.maps.Marker({
-          icon: icon,
-          position: newPoint,
-          map: map
+            icon: icon,
+            position: newPoint,
+            map: map
         });
-      }
-      tooltip_data = "<div> Lats: ".concat(la)+" Long: ".concat(lo)+" Elevation: ".concat(elevation)+"</div>";
-      infowindow = new google.maps.InfoWindow({
+    }
+    tooltip_data = "<div> Lats: ".concat(latitude) + " Long: ".concat(longitude) + " Elevation: ".concat(elevation) + "</div>";
+    infowindow = new google.maps.InfoWindow({
         content: tooltip_data,
-      });
-      marker.addListener("mouseover", () => {
+    });
+    marker.addListener("mouseover", () => {
         infowindow.open(map, marker);
-      });
-      marker.addListener('mouseout', function() {
+    });
+    marker.addListener('mouseout', function() {
         infowindow.close();
     });
 
-      if (line) {
+    if (line) {
         line = new google.maps.Polyline({
             path: [newPoint, lastPoint],
             strokeColor: "#FF0000",
@@ -70,7 +66,7 @@ function update() {
             geodesic: true,
             map: map
         });
-      } else {
+    } else {
         line = new google.maps.Polyline({
             path: [newPoint, newPoint],
             strokeColor: "#FF0000",
@@ -79,19 +75,32 @@ function update() {
             geodesic: true,
             map: map
         });
-      }
+    }
 
-      map.setCenter(newPoint);
+    map.setCenter(newPoint);
 
-      lastPoint = newPoint;
+    lastPoint = newPoint;
 
-      lo = lo + 1;
+    longitude = longitude + 1;
 
+    updateCoords();
 
-  
-  
-    // Call the autoUpdate() function every 5 seconds
     setTimeout(update, delay_ns);
-  }
+}
 
-  
+function updateCoords() {
+    $.ajax({
+        type: "Get",
+        url: "static/satellites.json",
+        dataType: "json",
+        success: function(data) {
+            console.log(data['satellites'][0]);
+            latitude = data['satellites'][0]['lat'];
+            longitude = data['satellites'][0]['long'];
+            elevation = data['satellites'][0]['elevation'];
+        },
+        error: function() {
+            alert("There was a problem with the server.  Try again soon!");
+        }
+    });
+}

@@ -20,7 +20,7 @@
 }
 
 '''
-
+import os
 import time
 import sys
 from skyfield.almanac import dark_twilight_day
@@ -58,7 +58,7 @@ def visibility(satellite, time, location=None):
         print(f'{satellite.name} is below the horizon')
 
     elif sun == 4:
-        print(f'{satelltie.name} is above the horizon during day time')
+        print(f'{satellite.name} is above the horizon during day time')
 
     elif not sunlit:
         print(f'{satellite.name} is above the horizon, but in Earth shadow')
@@ -70,6 +70,7 @@ def visibility(satellite, time, location=None):
         print(f'{satellite.name} is visible in the night sky!')
 
     print('Azimuth:', az, 'Elevation:', alt, f'Distance (km): {distance.km:.1f}')
+
 
 
 
@@ -113,7 +114,7 @@ while True:
         if abs(ts.now() - last_try) > 1:
             satellites = load.tle_file(url, filename=filename, reload=True)
             last_try = ts.now()
-    
+
     now = ts.now()
     [lat,log, ele] = getCoords(satellite, now)
     map_string = '' + str(lat) + ', ' + str(log)
@@ -122,8 +123,9 @@ while True:
     json_data = "{\"satellites\":[{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
     json_data += "{}]}\r\n"
     #print (json_data)
-    f = open('satellites.json','w')
-    f.write(json_data);
+    f = open('/home/tracker/app/static/satellites.json','w')
+    print("Updated values")
+    f.write(json_data)
     f.close()
     time.sleep(sleep_time)
 

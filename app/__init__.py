@@ -3,14 +3,9 @@ from pyramid.httpexceptions import (
     HTTPNotFound,
     HTTPSeeOther,
 )
+import os
 
 def main(global_config, **settings):
-
-    # threading._start_new_thread(gen.run())
-    # calc_thread = threading.Thread(target=gen.run())
-    # calc_thread.setDaemon(True)
-    # calc_thread.start()
-    
 
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)

@@ -81,8 +81,6 @@ function update() {
 
     lastPoint = newPoint;
 
-    longitude = longitude + 1;
-
     updateCoords();
 
     setTimeout(update, delay_ns);
@@ -91,6 +89,7 @@ function update() {
 function updateCoords() {
     $.ajax({
         type: "Get",
+        cache: false,
         url: "static/satellites.json",
         dataType: "json",
         success: function(data) {

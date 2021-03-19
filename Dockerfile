@@ -5,19 +5,24 @@ ENV CWS=/home/tracker/app \
 
 WORKDIR /tmp
 
-COPY ./requirements.txt .
+COPY ./requirements.txt . 
+COPY ./data_sat/ /home/tracker/
 
 RUN useradd tracker && \
     python3 -m venv ${VENV} && \
     ${VENV}/bin/pip install --upgrade pip setuptools && \
-    ${VENV}/bin/pip install -r requirements.txt && \
-    rm /tmp/* -R 
+    ${VENV}/bin/pip install -r requirements.txt
+    #rm /tmp/* -R 
 
 FROM base as install-pyramid
 
+COPY app ${CWS}
+
+RUN nohup ${VENV}/bin/python3 /home/tracker/jsongenerator.py &
+
 WORKDIR /home/tracker
 
-COPY app ${CWS}
+#COPY app ${CWS}
 COPY development.ini .
 COPY setup.py .
 

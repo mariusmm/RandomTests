@@ -7,4 +7,4 @@ services:
       - '10000:10000'
     volumes:
       - ./app:/home/tracker/app
-     # - :/docker-entrypoint-initdb.d
+      - ./data_sat:/home/tracker/data_sat

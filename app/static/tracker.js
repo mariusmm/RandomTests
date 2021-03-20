@@ -1,11 +1,12 @@
 let map;
-let latitude = 0;
-let longitude = 0;
+let latitude = 41;
+let longitude = 5;
 let elevation = 0;
 let markers = [];
 let previous = [];
 let delay_ns = 5000;
 let map_zoom = 5;
+let vectorSource = [];
 
 var newPoint = null;
 var lastPoint = null;
@@ -13,71 +14,77 @@ var marker = null;
 var line = null;
 var infowindow = null;
 var icon = null;
+var vectorLayer = null;
+
+
 
 var tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</div>";
 
 
 function initMap() {
-    map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: latitude, lng: longitude },
-        zoom: map_zoom,
+    var Marker = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
+        name: 'Enxaneta',
+        Alçada: elevation
     });
-    icon = {
-        url: "static/enxaneta.png",
-        scaledSize: new google.maps.Size(80, 80),
-        anchor: new google.maps.Point(40, 40),
-    };
+    
+   markers.push(Marker);
+
+   vectorSource = new ol.source.Vector({
+        features: markers //add an array of features
+    });
+   
+   var iconStyle = new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        anchor: [0.5, 46],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        opacity: 0.75,
+        scale: 0.35,
+        src: 'static/enxaneta.png'
+        }))
+    });
+
+
+    vectorLayer = new ol.layer.Vector({
+    source: vectorSource,
+    style: iconStyle
+    });
+    
+    
+    var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }), vectorLayer
+        ],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([longitude, latitude]),
+          zoom: 6
+        })
+      });
+    
     update();
 }
 
 
 function update() {
     updateCoords();
-    var newPoint = new google.maps.LatLng(latitude, longitude);
-    if (marker) {
-        marker.setPosition(newPoint);
-    } else {
 
-    marker = new google.maps.Marker({
-        icon: icon,
-        position: newPoint,
-        map: map
-    });
-    }
-    infowindow = new google.maps.InfoWindow({
-        content: tooltip_data,
-    });
-    marker.addListener("mouseover", () => {
-        infowindow.open(map, marker);
-    });
-    marker.addListener('mouseout', function() {
-        infowindow.close();
-    });
-
-    if (line) {
-        line = new google.maps.Polyline({
-            path: [newPoint, lastPoint],
-            strokeColor: "#FF0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 1,
-            geodesic: true,
-            map: map
-    });
-    } else {
-        console.log(latitude);
-        line = new google.maps.Polyline({
-            path: [newPoint, lastPoint], 
-            strokeColor: "#FF0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 1,
-            geodesic: true,
-            map: map
-        });
-    }
-
-    map.setCenter(newPoint);
+//     vectorSource.clear();
     
-    lastPoint = newPoint;
+    var Marker = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
+        name: 'Enxaneta',
+        Alçada: elevation
+    });
+    
+   markers.push(Marker);
+   
+   vectorLayer.getSource().changed();
+
+
     
     setTimeout(update, delay_ns);
 }

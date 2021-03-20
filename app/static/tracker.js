@@ -22,16 +22,17 @@ var tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br
 
 
 function initMap() {
-    var Marker = new ol.Feature({
+    
+    marker = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
         name: 'Enxaneta',
         Alçada: elevation
     });
     
-   markers.push(Marker);
+   markers.push(marker);
 
    vectorSource = new ol.source.Vector({
-        features: markers //add an array of features
+        features: markers //add  an array of features
     });
    
    var iconStyle = new ol.style.Style({
@@ -47,8 +48,8 @@ function initMap() {
 
 
     vectorLayer = new ol.layer.Vector({
-    source: vectorSource,
-    style: iconStyle
+        source: vectorSource,
+        style: iconStyle
     });
     
     
@@ -72,19 +73,9 @@ function initMap() {
 function update() {
     updateCoords();
 
-//     vectorSource.clear();
-    
-    var Marker = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
-        name: 'Enxaneta',
-        Alçada: elevation
-    });
-    
-   markers.push(Marker);
-   
-   vectorLayer.getSource().changed();
-
-
+    var newpoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+    markers[0].setGeometry(newpoint);
+    vectorLayer.getSource().changed();
     
     setTimeout(update, delay_ns);
 }

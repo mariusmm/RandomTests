@@ -133,7 +133,7 @@ function update() {
               'animation': false,
               'html': true,
               'title': 'Enxaneta',
-              'content':  "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "º<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "º<br><b>Elevation: </b>".concat(elevation) + " km</div>"
+              'content':  "<div style='width:200px;'> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "º<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "º<br><b>Elevation: </b>".concat(elevation) + " km</div>"
             }).popover('show');
         }
       });
@@ -155,7 +155,7 @@ function updateCoords() {
             latitude = data['satellites'][0]['lat'];
             longitude = data['satellites'][0]['long'];
             elevation = data['satellites'][0]['elevation'];
-            tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</div>";
+            tooltip_data = "<p style='width:200px;'> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</p>";
         },
             error: function() {
             alert("There was a problem with the server. Try again soon!");

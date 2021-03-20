@@ -61,7 +61,7 @@ function initMap() {
         ],
         view: new ol.View({
           center: ol.proj.fromLonLat([longitude, latitude]),
-          zoom: 6
+          zoom: 5
         })
       });
      
@@ -71,11 +71,11 @@ function initMap() {
 
 function update() {
     updateCoords();
-    map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+
     var newpoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     markers[0].setGeometry(newpoint);
     vectorLayer.getSource().changed();
-    
+    map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     setTimeout(update, delay_ns);
 }
 

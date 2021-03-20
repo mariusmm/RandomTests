@@ -87,8 +87,7 @@ function update() {
     
     // Limit array of points to 1500 that should be ~3 orbits
     orbitpoints = orbitpoints.slice(-1500);
-    console.log(orbitpoints);
-    
+        
     // Remove old layer, we will create a new one
     map.removeLayer(vectorOrbitLayer);
     

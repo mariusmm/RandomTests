@@ -132,7 +132,7 @@ function update() {
               'placement': 'top',
               'animation': false,
               'html': true,
-              'title': 'Enxaneta',
+              'title': '<h1> Enxaneta </h1>',
               'content':  "<div class='sat'> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "º<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "º<br><b>Elevation: </b>".concat(elevation) + " km</div>"
             }).popover('show');
         }

@@ -45,9 +45,9 @@ function initMap() {
    
    var iconStyle = new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-        anchor: [0.5, 45],
+        anchor: [0.5, 0.7],
         anchorXUnits: 'fraction',
-        anchorYUnits: 'pixels',
+        anchorYUnits: 'fraction',
         opacity: 0.75,
         scale: 0.35,
         src: 'static/enxaneta.png'

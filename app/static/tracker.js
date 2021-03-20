@@ -17,7 +17,6 @@ var icon = null;
 var vectorLayer = null;
 
 
-
 var tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</div>";
 
 
@@ -53,7 +52,7 @@ function initMap() {
     });
     
     
-    var map = new ol.Map({
+    map = new ol.Map({
         target: 'map',
         layers: [
           new ol.layer.Tile({
@@ -65,14 +64,14 @@ function initMap() {
           zoom: 6
         })
       });
-    
+     
     update();
 }
 
 
 function update() {
     updateCoords();
-
+    map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     var newpoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     markers[0].setGeometry(newpoint);
     vectorLayer.getSource().changed();

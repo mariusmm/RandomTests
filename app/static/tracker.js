@@ -1,12 +1,13 @@
 let map;
-let latitude = 41;
-let longitude = 5;
+let latitude = 0;
+let longitude = 0;
 let elevation = 0;
 let markers = [];
 let previous = [];
 let delay_ns = 5000;
 let map_zoom = 5;
 let vectorSource = [];
+let orbitpoints = [];
 
 var newPoint = null;
 var lastPoint = null;
@@ -16,14 +17,16 @@ var infowindow = null;
 var icon = null;
 var vectorLayer = null;
 
+var orbitLine  = null;
+var vectorOrbitLayer = null;
 
 var tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</div>";
 
 
 function initMap() {
-    
+    lastPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'));
     marker = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
+        geometry: lastPoint,
         name: 'Enxaneta',
         Alçada: elevation
     });
@@ -57,7 +60,7 @@ function initMap() {
         layers: [
           new ol.layer.Tile({
             source: new ol.source.OSM()
-          }), vectorLayer
+             }), vectorLayer
         ],
         view: new ol.View({
           center: ol.proj.fromLonLat([longitude, latitude]),
@@ -72,9 +75,34 @@ function initMap() {
 function update() {
     updateCoords();
 
-    var newpoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
-    markers[0].setGeometry(newpoint);
+    newPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+    markers[0].setGeometry(newPoint);
     vectorLayer.getSource().changed();
+    
+    if (longitude != 0  && latitude != 0)
+        orbitpoints.push([longitude, latitude]);
+        console.log(orbitpoints);
+    
+    
+    orbitLine = new ol.Feature({
+        geometry: new ol.geom.LineString(orbitpoints).transform('EPSG:4326', 'EPSG:3857')
+    });
+    
+    var vectorOrbit = new ol.source.Vector({});
+    vectorOrbit.addFeature(orbitLine);
+
+    vectorOrbitLayer = new ol.layer.Vector({
+        source: vectorOrbit,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({ color: '#FF0000', weight: 4 }),
+            stroke: new ol.style.Stroke({ color: '#FF0000', width: 2 })
+        })
+    });
+    
+    map.addLayer(vectorOrbitLayer);
+   
+    vectorOrbitLayer.getSource().changed();
+   
     map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     setTimeout(update, delay_ns);
 }

@@ -142,6 +142,9 @@ function update() {
           }).popover('show');
         }
       });
+      map.on('pointermove', function(evt) {
+        map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
+      })
     map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     setTimeout(update, delay_ns);
 }

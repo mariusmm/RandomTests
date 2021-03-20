@@ -126,20 +126,15 @@ function update() {
         });
         var element = $(popup.getElement());
         element.popover('destroy');
-        if (feature) {
-            var coordinate = evt.coordinate;
-        var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
-            coordinate, 'EPSG:3857', 'EPSG:4326'));
-
-      
-          popup.setPosition(evt.coordinate);
-          element.popover({
-            'placement': 'top',
-            'animation': false,
-            'html': true,
-            'content': '<p>Coordinates:</p><code>' + hdms +
-            '</code>'
-          }).popover('show');
+        if (feature) {   
+            popup.setPosition(evt.coordinate);
+            element.popover({
+              'placement': 'top',
+              'animation': false,
+              'html': true,
+              'title': 'Enxaneta',
+              'content':  "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "º<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "º<br><b>Elevation: </b>".concat(elevation) + " km</div>"
+            }).popover('show');
         }
       });
       map.on('pointermove', function(evt) {
@@ -156,7 +151,7 @@ function updateCoords() {
         url: "static/satellites.json",
         dataType: "json",
         success: function(data) {
-            console.log(data['satellites'][0]);
+            // console.log(data['satellites'][0]);
             latitude = data['satellites'][0]['lat'];
             longitude = data['satellites'][0]['long'];
             elevation = data['satellites'][0]['elevation'];

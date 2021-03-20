@@ -20,6 +20,10 @@ var vectorLayer = null;
 var orbitLine  = null;
 var vectorOrbitLayer = null;
 
+
+let popup;
+var popupOverlay;
+var element = document.getElementById('popup');
 var tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br><b>Longitude: </b>".concat(longitude.toFixed(4)) + "<br><b>Elevation: </b>".concat(elevation) + "</div>";
 
 
@@ -53,7 +57,7 @@ function initMap() {
         source: vectorSource,
         style: iconStyle
     });
-    
+
     
     map = new ol.Map({
         target: 'map',
@@ -102,7 +106,35 @@ function update() {
     map.addLayer(vectorOrbitLayer);
    
     vectorOrbitLayer.getSource().changed();
-   
+
+
+    var popup = new ol.Overlay({
+        element: document.getElementById('popup')
+      });
+      map.addOverlay(popup);
+    
+      map.on('singleclick', function(evt) {
+        var feature = map.forEachFeatureAtPixel(evt.pixel, function(feat, layer) {
+          return feat;
+        });
+        var element = $(popup.getElement());
+        element.popover('destroy');
+        if (feature) {
+            var coordinate = evt.coordinate;
+        var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
+            coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+      
+          popup.setPosition(evt.coordinate);
+          element.popover({
+            'placement': 'top',
+            'animation': false,
+            'html': true,
+            'content': '<p>Coordinates:</p><code>' + hdms +
+            '</code>'
+          }).popover('show');
+        }
+      });
     map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     setTimeout(update, delay_ns);
 }

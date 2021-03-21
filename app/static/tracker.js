@@ -28,7 +28,6 @@ var tooltip_data = "<div> <b>Latitude: </b> ".concat(latitude.toFixed(4)) + "<br
 
 
 function initMap() {
-    updateCoords();
 
     lastPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'));
     marker = new ol.Feature({
@@ -59,8 +58,7 @@ function initMap() {
         source: vectorSource,
         style: iconStyle
     });
-
-    
+   
     map = new ol.Map({
         target: 'map',
         layers: [
@@ -85,11 +83,13 @@ function update() {
     markers[0].setGeometry(newPoint);
     vectorLayer.getSource().changed();
     
-    if (longitude != 0  && latitude != 0)
+    if (longitude != 0 && latitude != 0)
+        if (longitude < 0)
+            longitude = longitude + 360;
         orbitpoints.push([longitude, latitude]);
     
     
-    // Limit array of points to 1500 that should be ~3 orbits
+    // Limit array of points to 1500 that should be ~1.5 orbits
     orbitpoints = orbitpoints.slice(-1500);
         
     // Remove old layer, we will create a new one

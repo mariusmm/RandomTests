@@ -1,10 +1,10 @@
 version: "3.3"
 services:
   web:
-    build: .
+    image: php:7.3-apache
     container_name: st_tracker
     ports:
-      - '10000:10000'
+      - '10000:80'
     volumes:
-      - ./app:/home/tracker/app
+      - ./app:/var/www/html/
       - ./data_sat:/home/tracker/data_sat

@@ -1,6 +1,1 @@
-pyramid==2.0
-waitress
-pyramid_jinja2
-pyramid_debugtoolbar
-pytest
 skyfield

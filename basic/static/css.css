@@ -1,5 +1,12 @@
 #map {
     height: 100%;
+    position: absolute;
+}
+
+#logo {
+    position: relative;
+    padding-top: 46%;
+    padding-left: 2%;
 }
 
 
@@ -8,8 +15,10 @@
 html,
 body {
     height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
+    position: absolute;
 }
 
 .sat {

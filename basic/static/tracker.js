@@ -33,7 +33,7 @@ function initMap() {
     marker = new ol.Feature({
         geometry: lastPoint,
         name: 'Enxaneta',
-        Alçada: elevation
+        Alcada: elevation
     });
     
    markers.push(marker);
@@ -157,9 +157,9 @@ function updateCoords() {
             longitude = data['satellites'][0]['long'];
             elevation = data['satellites'][0]['elevation'];
         },
-            error: function() {
+          /*  error: function() {
             alert("There was a problem with the server. Try again soon!");
-        }
+        }*/
     });
 
 }

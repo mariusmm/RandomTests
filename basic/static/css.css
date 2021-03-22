@@ -5,8 +5,13 @@
 
 #logo {
     position: relative;
-    padding-top: 46%;
+    padding-top: 45%;
     padding-left: 2%;
+}
+
+#img-logo {
+    width: 160px;
+    height: 60px;
 }
 
 

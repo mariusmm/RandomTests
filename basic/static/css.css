@@ -1,17 +1,16 @@
 #map {
     height: 100%;
-    position: absolute;
+    position: relative;
 }
 
 #logo {
-    position: relative;
-    margin-top: 45%;
-    margin-left: 2%;
+    position: fixed;
+    bottom: 2%;
+    left: 2%;
 }
 
 #img-logo {
-    width: 160px;
-    height: 60px;
+    width: 240px;
 }
 
 
@@ -23,7 +22,7 @@ body {
     width: 100%;
     margin: 0;
     padding: 0;
-    position: absolute;
+    position: relative;
 }
 
 .sat {

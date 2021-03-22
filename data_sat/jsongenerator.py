@@ -130,8 +130,7 @@ while True:
     json_data = "{\"satellites\":[{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
     json_data += "{}]}\r\n"
     #print (json_data)
-    f = open('/home/tracker/app/static/satellites.json','w')
-    print("Updated values")
+    f = open('satellites.json','w')
     f.write(json_data)
     f.close()
     time.sleep(sleep_time)

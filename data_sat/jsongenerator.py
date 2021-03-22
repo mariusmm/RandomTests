@@ -80,10 +80,17 @@ print("Updating data every", sleep_time, "seconds")
 ts = load.timescale()
 
 
-## Using preliminary TLE from OC
 
-line1 = '1 00000U 00000A   21079.43671296  .00000000  00000-0  15378-4 0  08'
-line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
+
+## Preliminary TLE from OC
+#line1 = '1 00000U 00000A   21082.43671296  .00000000  00000-0  15378-4 0  08'
+#line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
+
+## Updated TLE at 19:00 from OC
+line1 = '1 00000U 00000A   21081.43671296  .00000000  00000-0  15068-4 0  07' 
+line2 = '2 00000  97.5665 345.3219 0020543 246.5023 55.8363  15.05248993 09'
+
+
 satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
 
 ## When observational TLE are publised, use the following lines 

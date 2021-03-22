@@ -33,7 +33,7 @@ function initMap() {
     marker = new ol.Feature({
         geometry: lastPoint,
         name: 'Enxaneta',
-        Alçada: elevation
+        Alcada: elevation
     });
     
    markers.push(marker);

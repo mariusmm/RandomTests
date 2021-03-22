@@ -83,9 +83,10 @@ function update() {
     markers[0].setGeometry(newPoint);
     vectorLayer.getSource().changed();
     
+    if (longitude < 0)
+       longitude = longitude + 360;
+    
     if (longitude != 0 && latitude != 0)
-        if (longitude < 0)
-            longitude = longitude + 360;
         orbitpoints.push([longitude, latitude]);
     
     

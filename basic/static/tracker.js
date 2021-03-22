@@ -33,7 +33,7 @@ function initMap() {
     marker = new ol.Feature({
         geometry: lastPoint,
         name: 'Enxaneta',
-        Alcada: elevation
+        Alçada: elevation
     });
     
    markers.push(marker);
@@ -83,9 +83,10 @@ function update() {
     markers[0].setGeometry(newPoint);
     vectorLayer.getSource().changed();
     
+    if (longitude < 0)
+       longitude = longitude + 360;
+    
     if (longitude != 0 && latitude != 0)
-        if (longitude < 0)
-            longitude = longitude + 360;
         orbitpoints.push([longitude, latitude]);
     
     
@@ -156,9 +157,9 @@ function updateCoords() {
             longitude = data['satellites'][0]['long'];
             elevation = data['satellites'][0]['elevation'];
         },
-         /*   error: function() {
+            error: function() {
             alert("There was a problem with the server. Try again soon!");
-        }*/
+        }
     });
 
 }

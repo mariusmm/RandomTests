@@ -3,7 +3,6 @@ let latitude = 0;
 let longitude = 0;
 let elevation = 0;
 let markers = [];
-let previous = [];
 let delay_ns = 5000;
 let map_zoom = 5;
 let vectorSource = [];
@@ -13,16 +12,14 @@ var newPoint = null;
 var lastPoint = null;
 var marker = null;
 var line = null;
-var infowindow = null;
 var icon = null;
 var vectorLayer = null;
 
 var orbitLine  = null;
 var vectorOrbitLayer = null;
-
+var track_enabled = true;
 
 let popup;
-var popupOverlay;
 var element = document.getElementById('popup');
 
 
@@ -49,7 +46,7 @@ function initMap() {
         anchorYUnits: 'fraction',
         opacity: 0.75,
         scale: 0.35,
-        src: 'static/enxaneta.png'
+        src: 'resources/enxaneta.png'
         }))
     });
 
@@ -68,7 +65,7 @@ function initMap() {
         ],
         view: new ol.View({
           center: ol.proj.fromLonLat([longitude, latitude]),
-          zoom: 5
+          zoom: map_zoom
         })
       });
      
@@ -141,7 +138,10 @@ function update() {
       map.on('pointermove', function(evt) {
         map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
       })
-    map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+    if (track_enabled){
+      map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+    }
+
     setTimeout(update, delay_ns);
 }
 
@@ -149,7 +149,7 @@ function updateCoords() {
     $.ajax({
         type: "Get",
         cache: false,
-        url: "static/satellites.json",
+        url: "resources/satellites.json",
         dataType: "json",
         success: function(data) {
             // console.log(data['satellites'][0]);
@@ -162,4 +162,13 @@ function updateCoords() {
         }*/
     });
 
+}
+
+function toggleTracking(element) {
+  if (element.checked) {
+  	track_enabled = true;
+    map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+  } else {
+  	track_enabled = false;
+  }
 }

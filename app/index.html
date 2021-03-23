@@ -2,30 +2,32 @@
 <html lang="en">
 
 <head>
-  <title>Enxaneta</title>
-  
-  <script type="text/javascript" src="static/jquery/jquery.min.js"></script>
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
 
-  <link rel="stylesheet" href="static/css.css"> 
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
-    <style>
-      .map {
-        height: 700px;
-        width: 100%;
-      }
-    </style>
+    <title>Enxaneta</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
+
+    <link rel="stylesheet" href="resources/default.css">
 </head>
 
 <body>
- <div id="map" class="map"></div> <div style="display: block;">
-  <div id="popup"></div>
-</div>
-  <script src="static/tracker.js"></script>
-      <script type="text/javascript">
-	      initMap();
+    <div id="map" class="map"></div>
+    <div id="track-checkbox"><label for="track">Seguiment</label> <input type="checkbox" id="track" value="true" onclick="toggleTracking(this)" checked></div>
+    <div id="logo"><img id="img-logo" src="https://s3-eu-west-1.amazonaws.com/ieec.cat/global_images/25y_IEEC_full_main_Spa.png"> </div>
+    
+    <div style="display: block;">
+        <div id="popup"></div>
+    </div>
+    <script src="resources/tracker.js"></script>
+    <script type="text/javascript">
+        initMap();
     </script>
 </body>
 

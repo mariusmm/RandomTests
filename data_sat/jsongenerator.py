@@ -73,65 +73,66 @@ def visibility(satellite, time, location=None):
 
 
 
-
-sleep_time = 5
-print("Updating data every", sleep_time, "seconds")
-
-ts = load.timescale()
-
-
-
-
-## Preliminary TLE from OC
-#line1 = '1 00000U 00000A   21082.43671296  .00000000  00000-0  15378-4 0  08'
-#line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
-
-## Updated TLE at 19:00 from OC
-line1 = '1 00000U 00000A   21081.43671296  .00000000  00000-0  15068-4 0  07' 
-line2 = '2 00000  97.5665 345.3219 0020543 246.5023 55.8363  15.05248993 09'
-
-
-satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
-
-## When observational TLE are publised, use the following lines 
-
-# Satellite ID 
-n = 46292
-#url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
-#filename = 'tle-CATNR-{}.txt'.format(n)
-#satellites = load.tle_file(url, filename=filename, reload=False)
-#satellite = satellites[0]
-#print(satellite)
-#print(satellite.epoch.utc_jpl())
-
-sat_epoch = satellite.epoch
-last_try = ts.utc(2000)
-
-# If TLE data is too old, try to update it
-#if abs(sat_epoch - ts.now()) > 14:
-    ## If already tried today, skip
-    #if abs(ts.now() - last_try) > 1:
-        #satellites = load.tle_file(url, filename=filename, reload=True)
-        #last_try = ts.now()
-
-# Calculate position at t = now
-while True:
+if __name__ == '__main__':
+    sleep_time = 5
+    print("Updating data every", sleep_time, "seconds")
+    
+    ts = load.timescale()
+    
+    
+    
+    
+    ## Preliminary TLE from OC
+    #line1 = '1 00000U 00000A   21082.43671296  .00000000  00000-0  15378-4 0  08'
+    #line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
+    
+    ## Updated TLE at 19:00 from OC
+    line1 = '1 00000U 00000A   21081.43671296  .00000000  00000-0  15068-4 0  07' 
+    line2 = '2 00000  97.5665 345.3219 0020543 246.5023 55.8363  15.05248993 09'
+    
+    
+    satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+    
+    ## When observational TLE are publised, use the following lines 
+    
+    # Satellite ID 
+    n = 46292
+    #url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+    #filename = 'tle-CATNR-{}.txt'.format(n)
+    #satellites = load.tle_file(url, filename=filename, reload=False)
+    #satellite = satellites[0]
+    #print(satellite)
+    #print(satellite.epoch.utc_jpl())
+    
+    sat_epoch = satellite.epoch
+    last_try = ts.utc(2000)
+    
     # If TLE data is too old, try to update it
-    if abs(sat_epoch - ts.now()) > 14:
-        if abs(ts.now() - last_try) > 1:
-            satellites = load.tle_file(url, filename=filename, reload=True)
-            last_try = ts.now()
-
-    now = ts.now()
-    [lat,log, ele] = getCoords(satellite, now)
-    map_string = '' + str(lat) + ', ' + str(log)
-    #print(map_string)
-    #print('Elevation (km):', ele/1000)   
-    json_data = "{\"satellites\":[{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
-    json_data += "{}]}\r\n"
-    #print (json_data)
-    f = open('satellites.json','w')
-    f.write(json_data)
-    f.close()
-    time.sleep(sleep_time)
-
+    #if abs(sat_epoch - ts.now()) > 14:
+        ## If already tried today, skip
+        #if abs(ts.now() - last_try) > 1:
+            #satellites = load.tle_file(url, filename=filename, reload=True)
+            #last_try = ts.now()
+    
+    # Calculate position at t = now
+    while True:
+        # If TLE data is too old, try to update it
+        if abs(sat_epoch - ts.now()) > 14:
+            if abs(ts.now() - last_try) > 1:
+                satellites = load.tle_file(url, filename=filename, reload=True)
+                last_try = ts.now()
+    
+        now = ts.now()
+        [lat,log, ele] = getCoords(satellite, now)
+        map_string = '' + str(lat) + ', ' + str(log)
+        #print(map_string)
+        #print('Elevation (km):', ele/1000)   
+        json_data = "{\"satellites\":[{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
+        json_data += "{}]}\r\n"
+        #print (json_data)
+        f = open('../app/resources/satellites.json','w')
+        f.write(json_data)
+        f.close()
+        time.sleep(sleep_time)
+    
+    

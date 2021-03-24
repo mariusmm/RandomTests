@@ -1,31 +1,12 @@
-FROM python:3.6 as base
+FROM python:3.6
 
-ENV CWS=/home/tracker/app \
-    VENV=/home/tracker/env
+COPY requirements.txt .
 
-WORKDIR /tmp
+RUN apt-get update && apt-get install -y \
+    python3-dev
 
-COPY ./requirements.txt . 
-COPY ./data_sat/ /home/tracker/
-
-RUN useradd tracker && \
-    python3 -m venv ${VENV} && \
-    ${VENV}/bin/pip install --upgrade pip setuptools && \
-    ${VENV}/bin/pip install -r requirements.txt
-    #rm /tmp/* -R 
-
-FROM base as install-pyramid
+# For requirements
+RUN pip install -r requirements.txt
 
 
-WORKDIR /home/tracker
-
-COPY app ${CWS}
-COPY development.ini .
-COPY setup.py .
-
-RUN ${VENV}/bin/pip install -e . 
-
-CMD ["sh", "-c", "$VENV/bin/pserve development.ini --reload"]
-
-# Exposed pyramid port
-EXPOSE 10000
+# CMD ["python", "jsongenerator.py"]

@@ -1,10 +1,16 @@
 version: "3.3"
 services:
-  web:
-    build: .
-    container_name: st_tracker
+  frontend:
+    image: php:7.3-apache
+    container_name: st_tracker_frontend
     ports:
-      - '10000:10000'
+      - '10000:80'
+    volumes:
+      - ./app:/var/www/html/
+
+  backend:
+    build: .
+    container_name: st_tracker_backend
     volumes:
       - ./app:/home/tracker/app
       - ./data_sat:/home/tracker/data_sat

@@ -32,3 +32,11 @@ body {
     width: 200px;
     font-size: large;
 }
+
+.ol-scale-line {
+    position: fixed;
+    top: 10px;
+    left: 50px;
+    height: 25px;
+}
+

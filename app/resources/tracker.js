@@ -7,6 +7,7 @@ let delay_ns = 5000;
 let map_zoom = 5;
 let vectorSource = [];
 let orbitpoints = [];
+let nextpoints = [];
 
 var newPoint = null;
 var lastPoint = null;
@@ -21,7 +22,6 @@ var track_enabled = true;
 
 let popup;
 var element = document.getElementById('popup');
-
 
 
 function initMap() {
@@ -53,7 +53,9 @@ function initMap() {
 
     vectorLayer = new ol.layer.Vector({
         source: vectorSource,
-        style: iconStyle
+        style: iconStyle,
+        maxZoom: 50,
+        minZoom: 1
     });
    
     map = new ol.Map({
@@ -66,9 +68,15 @@ function initMap() {
         view: new ol.View({
           center: ol.proj.fromLonLat([longitude, latitude]),
           zoom: map_zoom
-        })
+        }),
+        
+        controls: ol.control.defaults().extend([
+            new ol.control.ScaleLine({target: document.getElementById('scale-line')})
+        ]),
       });
      
+
+    
     update();
 }
 
@@ -79,13 +87,13 @@ function update() {
     newPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
     markers[0].setGeometry(newPoint);
     vectorLayer.getSource().changed();
-    
+
+    // it fixes -180 º meridian but translates the problem to 0º meridian
     if (longitude < 0)
        longitude = longitude + 360;
     
     if (longitude != 0 && latitude != 0)
         orbitpoints.push([longitude, latitude]);
-    
     
     // Limit array of points to 1500 that should be ~1.5 orbits
     orbitpoints = orbitpoints.slice(-1500);
@@ -104,14 +112,14 @@ function update() {
         source: vectorOrbit,
         style: new ol.style.Style({
             fill: new ol.style.Fill({ color: '#FF0000', weight: 4 }),
-            stroke: new ol.style.Stroke({ color: '#FF0000', width: 2 })
+            stroke: new ol.style.Stroke({ color: '#FF0000', width: 2 }),
+            maxZoom: 50,
+            minZoom: 1
         })
     });
     
     map.addLayer(vectorOrbitLayer);
-   
     vectorOrbitLayer.getSource().changed();
-
 
     var popup = new ol.Overlay({
         element: document.getElementById('popup')
@@ -152,7 +160,6 @@ function updateCoords() {
         url: "resources/satellites.json",
         dataType: "json",
         success: function(data) {
-            // console.log(data['satellites'][0]);
             latitude = data['satellites'][0]['lat'];
             longitude = data['satellites'][0]['long'];
             elevation = data['satellites'][0]['elevation'];

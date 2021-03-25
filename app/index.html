@@ -20,7 +20,14 @@
 <body>
     <div id="map" class="map"></div>
     <div id="scale-line" class="scale-line"></div>    
-    <div id="logo"> <div ><label for="track">Seguiment</label> <input type="checkbox" id="track" value="true" onclick="toggleTracking(this)" checked></div><img id="img-logo" src="https://s3-eu-west-1.amazonaws.com/ieec.cat/global_images/25y_IEEC_full_main_Spa.png">
+    <div id="logo"> 
+        <div>
+            <label for="track">Seguiment</label> <input type="checkbox" id="track" value="true" onclick="toggleTracking(this)" checked>
+            <br>
+            <label for="orbit">Órbita esperada</label> <input type="checkbox" id="orbit" value="true" onclick="toggleFutureOrbit(this)" checked>
+    
+         </div>
+         <img id="img-logo" src="https://s3-eu-west-1.amazonaws.com/ieec.cat/global_images/25y_IEEC_full_main_Spa.png">
     </div>
     
     <div style="display: block;">

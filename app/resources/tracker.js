@@ -21,6 +21,7 @@ var vectorOrbitLayer = null;
 var track_enabled = true;
 var futureorbit = null;
 var vectorFutureOrbitLayer = null;
+var showFutureOrbit = true;
 
 let popup;
 var element = document.getElementById('popup');
@@ -193,9 +194,10 @@ function update() {
             minZoom: 1                                  
         })
     });    
-    
-    map.addLayer(vectorFutureOrbitLayer);
-    vectorFutureOrbitLayer.getSource().changed();
+    if (showFutureOrbit) {
+        map.addLayer(vectorFutureOrbitLayer);
+        vectorFutureOrbitLayer.getSource().changed();
+    }
     /* future orbit */
     
     
@@ -259,3 +261,16 @@ function toggleTracking(element) {
   	track_enabled = false;
   }
 }
+
+function toggleFutureOrbit(element) {
+    if (element.checked) {
+        showFutureOrbit = true;
+        map.addLayer(vectorFutureOrbitLayer);
+        vectorFutureOrbitLayer.getSource().changed();
+    } else {
+        showFutureOrbit = false;
+        map.removeLayer(vectorFutureOrbitLayer);
+        vectorFutureOrbitLayer.getSource().changed();
+    }
+  }
+  

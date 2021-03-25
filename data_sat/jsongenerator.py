@@ -133,7 +133,7 @@ if __name__ == '__main__':
             json_data += "{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
             
         json_data += "{}]}\r\n"
-        print (json_data)
+        # print (json_data)
         f.write(json_data)
         f.close()
         time.sleep(sleep_time)

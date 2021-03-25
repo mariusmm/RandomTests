@@ -87,10 +87,9 @@ if __name__ == '__main__':
     #line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
     
     ## Updated TLE at 19:00 from OC
-    line1 = '1 00000U 00000A   21081.43671296  .00000000  00000-0  15068-4 0  07' 
+    line1 = '1 00000U 00000A   21081.43671296  .00000000  00000-0  15068-4 0  07'
     line2 = '2 00000  97.5665 345.3219 0020543 246.5023 55.8363  15.05248993 09'
-    
-    
+
     satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
     
     ## When observational TLE are publised, use the following lines 
@@ -122,17 +121,20 @@ if __name__ == '__main__':
                 satellites = load.tle_file(url, filename=filename, reload=True)
                 last_try = ts.now()
     
-        now = ts.now()
-        [lat,log, ele] = getCoords(satellite, now)
-        map_string = '' + str(lat) + ', ' + str(log)
-        #print(map_string)
-        #print('Elevation (km):', ele/1000)   
-        json_data = "{\"satellites\":[{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
-        json_data += "{}]}\r\n"
-        #print (json_data)
         f = open('../app/resources/satellites.json','w')
+        json_data = "{\"satellites\":[";
+        
+        # Iterate to compute 15 points, current location and 14 points in the future
+        for x in range (95):
+            step = timedelta(minutes = x)
+            t = ts.from_datetime(datetime.now(timezone.utc) + step)
+            [lat, log, ele] = getCoords(satellite, t)
+            map_string = '' + str(lat) + ', ' + str(log)
+            json_data += "{\"id\": " + str(n) + ", \"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + "},"
+            
+        json_data += "{}]}\r\n"
+        print (json_data)
         f.write(json_data)
         f.close()
         time.sleep(sleep_time)
-    
     

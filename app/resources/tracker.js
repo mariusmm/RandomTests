@@ -19,6 +19,8 @@ var vectorLayer = null;
 var orbitLine  = null;
 var vectorOrbitLayer = null;
 var track_enabled = true;
+var futureorbit = null;
+var vectorFutureOrbitLayer = null;
 
 let popup;
 var element = document.getElementById('popup');
@@ -88,9 +90,14 @@ function update() {
     markers[0].setGeometry(newPoint);
     vectorLayer.getSource().changed();
 
-    // it fixes -180 º meridian but translates the problem to 0º meridian
-    if (longitude < 0)
-       longitude = longitude + 360;
+    // Remove old layer, we will create a new one
+    map.removeLayer(vectorOrbitLayer);
+    map.removeLayer(vectorFutureOrbitLayer);
+    
+    
+//     // it fixes -180 º meridian but translates the problem to 0º meridian
+//     if (longitude < 0)
+//        longitude = longitude + 360;
     
     if (longitude != 0 && latitude != 0)
         orbitpoints.push([longitude, latitude]);
@@ -98,15 +105,37 @@ function update() {
     // Limit array of points to 1500 that should be ~1.5 orbits
     orbitpoints = orbitpoints.slice(-1500);
         
-    // Remove old layer, we will create a new one
-    map.removeLayer(vectorOrbitLayer);
+    var split = 0;
     
-    orbitLine = new ol.Feature({
-        geometry: new ol.geom.LineString(orbitpoints).transform('EPSG:4326', 'EPSG:3857')
-    });
+    for (var i = 1; i < orbitpoints.length ; i++) {
+        startPoint = orbitpoints[i-1];
+        endPoint = orbitpoints[i];
+        
+        if (Math.abs(startPoint[0] - endPoint[0]) > 180) {
+                split = i;
+        }
+    }
     
     var vectorOrbit = new ol.source.Vector({});
-    vectorOrbit.addFeature(orbitLine);
+    
+    if (split == 0) {
+        orbitLine = new ol.Feature({
+            geometry: new ol.geom.LineString(orbitpoints).transform('EPSG:4326', 'EPSG:3857')
+        });
+        vectorOrbit.addFeature(orbitLine);
+        
+    } else {
+        var firstpart = orbitpoints.slice(0, split);
+        var secondpart = orbitpoints.slice(split, orbitpoints.length);
+        orbitLine = new ol.Feature({
+            geometry: new ol.geom.LineString(firstpart).transform('EPSG:4326', 'EPSG:3857')
+        });   
+        orbitLine2 = new ol.Feature({
+             geometry: new ol.geom.LineString(secondpart).transform('EPSG:4326', 'EPSG:3857')
+        });
+        vectorOrbit.addFeature(orbitLine);
+        vectorOrbit.addFeature(orbitLine2);
+    }
     
     vectorOrbitLayer = new ol.layer.Vector({
         source: vectorOrbit,
@@ -121,6 +150,55 @@ function update() {
     map.addLayer(vectorOrbitLayer);
     vectorOrbitLayer.getSource().changed();
 
+    /* future points in orbit */
+    var split = 0;
+    
+    for (var i = 1; i < nextpoints.length ; i++) {
+        startPoint = nextpoints[i-1];
+        endPoint = nextpoints[i];
+        
+        if (Math.abs(startPoint[0] - endPoint[0]) > 180) {
+                split = i;
+        }
+    }
+    
+    var vectorFutureOrbit = new ol.source.Vector({});
+    
+    if (split == 0) {
+        futureorbit = new ol.Feature({
+            geometry: new ol.geom.LineString(nextpoints).transform('EPSG:4326', 'EPSG:3857')
+        });
+        vectorFutureOrbit.addFeature(futureorbit);
+        
+    } else {
+        var firstpart = nextpoints.slice(0, split);
+        var secondpart = nextpoints.slice(split, nextpoints.length);
+        futureorbit = new ol.Feature({
+            geometry: new ol.geom.LineString(firstpart).transform('EPSG:4326', 'EPSG:3857')
+        });   
+       
+        futureorbit2 = new ol.Feature({
+             geometry: new ol.geom.LineString(secondpart).transform('EPSG:4326', 'EPSG:3857')
+        });
+        vectorFutureOrbit.addFeature(futureorbit);
+        vectorFutureOrbit.addFeature(futureorbit2);
+    }
+        
+    vectorFutureOrbitLayer = new ol.layer.Vector({
+        source: vectorFutureOrbit,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({color: '#FF00000', weigth: 4}),
+            stroke: new ol.style.Stroke({ color: '#FF0000', width: 2, lineDash: [10, 20, 0, 20] }),
+            maxZoom: 50,
+            minZoom: 1                                  
+        })
+    });    
+    
+    map.addLayer(vectorFutureOrbitLayer);
+    vectorFutureOrbitLayer.getSource().changed();
+    /* future orbit */
+    
+    
     var popup = new ol.Overlay({
         element: document.getElementById('popup')
       });
@@ -163,10 +241,12 @@ function updateCoords() {
             latitude = data['satellites'][0]['lat'];
             longitude = data['satellites'][0]['long'];
             elevation = data['satellites'][0]['elevation'];
+            nextpoints = [];
+            var i;
+            for (i = 0; i < 95; i++) {
+                nextpoints.push([data['satellites'][i]['long'], data['satellites'][i]['lat'] ]);
+            }
         },
-          /*  error: function() {
-            alert("There was a problem with the server. Try again soon!");
-        }*/
     });
 
 }

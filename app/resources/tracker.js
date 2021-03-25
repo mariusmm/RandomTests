@@ -78,6 +78,7 @@ function initMap() {
       });
      
 
+    vectorLayer.setZIndex(99);
     
     update();
 }

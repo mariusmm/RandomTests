@@ -246,7 +246,7 @@ function updateCoords() {
             /* Time is in GMT */
             nextpassepoch = data['satellites'][0]['nextpass'];
             nextpassdate = new Date(nextpassepoch*1000);
-            console.log(nextpassdate);
+            //console.log(nextpassdate);
             nextpoints = [];
             for (var i = 0; i < 95; i++) {
                  nextpoints.push([data['satellites'][0]['points'][i]['long'], data['satellites'][0]['points'][i]['lat'] ]);

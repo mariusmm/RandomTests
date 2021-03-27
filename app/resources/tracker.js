@@ -22,6 +22,7 @@ var track_enabled = true;
 var futureorbit = null;
 var vectorFutureOrbitLayer = null;
 var showFutureOrbit = true;
+var nextpassdate = null;
 
 let popup;
 var element = document.getElementById('popup');
@@ -29,7 +30,7 @@ var element = document.getElementById('popup');
 
 function initMap() {
 
-    lastPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'));
+    lastPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:4326'));
     marker = new ol.Feature({
         geometry: lastPoint,
         name: 'Enxaneta',
@@ -69,6 +70,7 @@ function initMap() {
              }), vectorLayer
         ],
         view: new ol.View({
+          projection: 'EPSG:4326',
           center: ol.proj.fromLonLat([longitude, latitude]),
           zoom: map_zoom
         }),
@@ -88,19 +90,15 @@ function initMap() {
 function update() {
     updateCoords();
 
-    newPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+    newPoint = new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:4326'))
     markers[0].setGeometry(newPoint);
     vectorLayer.getSource().changed();
 
     // Remove old layer, we will create a new one
     map.removeLayer(vectorOrbitLayer);
     map.removeLayer(vectorFutureOrbitLayer);
-    
-    
-//     // it fixes -180 º meridian but translates the problem to 0º meridian
-//     if (longitude < 0)
-//        longitude = longitude + 360;
-    
+ 
+    // We don't keep the initial point
     if (longitude != 0 && latitude != 0)
         orbitpoints.push([longitude, latitude]);
     
@@ -122,7 +120,7 @@ function update() {
     
     if (split == 0) {
         orbitLine = new ol.Feature({
-            geometry: new ol.geom.LineString(orbitpoints).transform('EPSG:4326', 'EPSG:3857')
+            geometry: new ol.geom.LineString(orbitpoints).transform('EPSG:4326', 'EPSG:4326')
         });
         vectorOrbit.addFeature(orbitLine);
         
@@ -130,10 +128,10 @@ function update() {
         var firstpart = orbitpoints.slice(0, split);
         var secondpart = orbitpoints.slice(split, orbitpoints.length);
         orbitLine = new ol.Feature({
-            geometry: new ol.geom.LineString(firstpart).transform('EPSG:4326', 'EPSG:3857')
+            geometry: new ol.geom.LineString(firstpart).transform('EPSG:4326', 'EPSG:4326')
         });   
         orbitLine2 = new ol.Feature({
-             geometry: new ol.geom.LineString(secondpart).transform('EPSG:4326', 'EPSG:3857')
+             geometry: new ol.geom.LineString(secondpart).transform('EPSG:4326', 'EPSG:4326')
         });
         vectorOrbit.addFeature(orbitLine);
         vectorOrbit.addFeature(orbitLine2);
@@ -168,7 +166,7 @@ function update() {
     
     if (split == 0) {
         futureorbit = new ol.Feature({
-            geometry: new ol.geom.LineString(nextpoints).transform('EPSG:4326', 'EPSG:3857')
+            geometry: new ol.geom.LineString(nextpoints).transform('EPSG:4326', 'EPSG:4326')
         });
         vectorFutureOrbit.addFeature(futureorbit);
         
@@ -176,11 +174,11 @@ function update() {
         var firstpart = nextpoints.slice(0, split);
         var secondpart = nextpoints.slice(split, nextpoints.length);
         futureorbit = new ol.Feature({
-            geometry: new ol.geom.LineString(firstpart).transform('EPSG:4326', 'EPSG:3857')
+            geometry: new ol.geom.LineString(firstpart).transform('EPSG:4326', 'EPSG:4326')
         });   
        
         futureorbit2 = new ol.Feature({
-             geometry: new ol.geom.LineString(secondpart).transform('EPSG:4326', 'EPSG:3857')
+             geometry: new ol.geom.LineString(secondpart).transform('EPSG:4326', 'EPSG:4326')
         });
         vectorFutureOrbit.addFeature(futureorbit);
         vectorFutureOrbit.addFeature(futureorbit2);
@@ -225,10 +223,10 @@ function update() {
         }
       });
       map.on('pointermove', function(evt) {
-        map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
+      map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
       })
     if (track_enabled){
-      map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+      map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:4326'))
     }
 
     setTimeout(update, delay_ns);
@@ -241,13 +239,17 @@ function updateCoords() {
         url: "resources/satellites.json",
         dataType: "json",
         success: function(data) {
-            latitude = data['satellites'][0]['lat'];
-            longitude = data['satellites'][0]['long'];
-            elevation = data['satellites'][0]['elevation'];
+            latitude = data['satellites'][0]['points'][0]['lat'];
+            longitude = data['satellites'][0]['points'][0]['long'];
+            elevation = data['satellites'][0]['points'][0]['elevation'];
+            
+            /* Time is in GMT */
+            nextpassepoch = data['satellites'][0]['nextpass'];
+            nextpassdate = new Date(nextpassepoch*1000);
+            console.log(nextpassdate);
             nextpoints = [];
-            var i;
-            for (i = 0; i < 95; i++) {
-                nextpoints.push([data['satellites'][i]['long'], data['satellites'][i]['lat'] ]);
+            for (var i = 0; i < 95; i++) {
+                 nextpoints.push([data['satellites'][0]['points'][i]['long'], data['satellites'][0]['points'][i]['lat'] ]);
             }
         },
     });
@@ -257,7 +259,7 @@ function updateCoords() {
 function toggleTracking(element) {
   if (element.checked) {
   	track_enabled = true;
-    map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
+    map.getView().setCenter(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:4326'))
   } else {
   	track_enabled = false;
   }

@@ -96,19 +96,23 @@ if __name__ == '__main__':
     #line2 = '2 47954  97.5672 349.9056 0020226 227.5117 270.1182 15.05637633   381'
     
     ## Updated to 29 March
-    line1 = '1 47954U 21022Y   21088.04778777 -.00000062  00000-0  00000+0 0  9990'
-    line2 = '2 47954  97.5677 351.7944 0020601 219.0280 254.5914 15.05638547   673'
+    #line1 = '1 47954U 21022Y   21088.04778777 -.00000062  00000-0  00000+0 0  9990'
+    #line2 = '2 47954  97.5677 351.7944 0020601 219.0280 254.5914 15.05638547   673'
     
-    satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+    ## Updated to 13 April
+    #line1 = '1 47954U 21022Y   21103.11279148  .00000235  00000-0  20485-4 0  9999'
+    #line2 = '2 47954  97.5649   6.5691 0021842 168.9912 191.1797 15.05669275  2947'
+    
+    #satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
     
     ## When observational TLE are publised, use the following lines 
     
     # Satellite ID 
-    n = 46292
-    #url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
-    #filename = 'tle-CATNR-{}.txt'.format(n)
-    #satellites = load.tle_file(url, filename=filename, reload=False)
-    #satellite = satellites[0]
+    n = 47954
+    url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+    filename = 'tle-CATNR-{}.txt'.format(n)
+    satellites = load.tle_file(url, filename=filename, reload=False)
+    satellite = satellites[0]
     #print(satellite)
     #print(satellite.epoch.utc_jpl())
     
@@ -116,11 +120,11 @@ if __name__ == '__main__':
     last_try = ts.utc(2000)
     
     # If TLE data is too old, try to update it
-    #if abs(sat_epoch - ts.now()) > 14:
-        ## If already tried today, skip
-        #if abs(ts.now() - last_try) > 1:
-            #satellites = load.tle_file(url, filename=filename, reload=True)
-            #last_try = ts.now()
+    if abs(sat_epoch - ts.now()) > 5:
+        # If already tried today, skip
+        if abs(ts.now() - last_try) > 1:
+            satellites = load.tle_file(url, filename=filename, reload=True)
+            last_try = ts.now()
     
     # Calculate position at t = now
     #location = wgs84.latlon(42.05138889, 0.72944444, 1620);
@@ -128,7 +132,7 @@ if __name__ == '__main__':
     
     while True:
         # If TLE data is too old, try to update it
-        if abs(sat_epoch - ts.now()) > 14:
+        if abs(sat_epoch - ts.now()) > 5:
             if abs(ts.now() - last_try) > 1:
                 satellites = load.tle_file(url, filename=filename, reload=True)
                 last_try = ts.now()

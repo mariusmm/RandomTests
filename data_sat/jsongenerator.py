@@ -108,7 +108,7 @@ if __name__ == '__main__':
     ## When observational TLE are publised, use the following lines 
     
     # Satellite ID 
-    n = 47954
+    n = 47961
     url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
     filename = 'tle-CATNR-{}.txt'.format(n)
     satellites = load.tle_file(url, filename=filename, reload=False)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
         t = ts.from_datetime(datetime.now(timezone.utc) + margin);
         # When the satellite will be visible from Manresa at 20º
         passes = satellite.find_events(location, ts.now(), t, 20);
-        print(passes[0][0].utc_datetime());
+        #print(passes[0][0].utc_datetime());
         if (passes[1][0] == 0):
             nextpass = int(passes[0][0].utc_datetime().timestamp());
             

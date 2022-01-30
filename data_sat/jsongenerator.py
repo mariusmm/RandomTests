@@ -146,7 +146,7 @@ if __name__ == '__main__':
         if (passes[1][0] == 0):
             nextpass = int(passes[0][0].utc_datetime().timestamp());
             
-        f = open('../app/resources/satellites.json','w')
+        f = open('/home/tracker/app/resources/satellites.json','w')
         json_data = "{\"satellites\":[{\"id\": " + str(n)
         json_data += ",\"nextpass\": " + str(nextpass);
         json_data += ",\"points\": [";

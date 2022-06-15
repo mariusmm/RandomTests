@@ -109,7 +109,7 @@ if __name__ == '__main__':
     
     # Satellite ID 
     n = 47961
-    url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+    url = 'https://celestrak.com/NORAD/elements/gp.php?CATNR={}'.format(n)
     filename = 'tle-CATNR-{}.txt'.format(n)
     satellites = load.tle_file(url, filename=filename, reload=False)
     satellite = satellites[0]

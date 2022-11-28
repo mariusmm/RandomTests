@@ -135,6 +135,8 @@ if __name__ == '__main__':
         if abs(sat_epoch - ts.now()) > 5:
             if abs(ts.now() - last_try) > 1:
                 satellites = load.tle_file(url, filename=filename, reload=True)
+                satellite = satellites[0]
+                sat_epoch = satellite.epoch
                 last_try = ts.now()
     
     

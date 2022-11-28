@@ -7,10 +7,12 @@ services:
       - '10000:80'
     volumes:
       - ./app:/var/www/html/
-
+      - ./data_sat:/home/tracker/data_sat
   backend:
     build: .
     container_name: st_tracker_backend
     volumes:
       - ./app:/home/tracker/app
       - ./data_sat:/home/tracker/data_sat
+
+    command: python /home/tracker/data_sat/jsongenerator.py

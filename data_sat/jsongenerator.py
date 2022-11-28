@@ -109,7 +109,7 @@ if __name__ == '__main__':
     
     # Satellite ID 
     n = 47961
-    url = 'https://celestrak.com/satcat/tle.php?CATNR={}'.format(n)
+    url = 'https://celestrak.com/NORAD/elements/gp.php?CATNR={}'.format(n)
     filename = 'tle-CATNR-{}.txt'.format(n)
     satellites = load.tle_file(url, filename=filename, reload=False)
     satellite = satellites[0]
@@ -148,7 +148,7 @@ if __name__ == '__main__':
         if (passes[1][0] == 0):
             nextpass = int(passes[0][0].utc_datetime().timestamp());
             
-        f = open('../app/resources/satellites.json','w')
+        f = open('/home/tracker/app/resources/satellites.json','w')
         json_data = "{\"satellites\":[{\"id\": " + str(n)
         json_data += ",\"nextpass\": " + str(nextpass);
         json_data += ",\"points\": [";

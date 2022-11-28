@@ -79,7 +79,7 @@ ts = load.timescale()
 
 line1 = '1 00000U 00000A   21079.43671296  .00000000  00000-0  15378-4 0  08'
 line2 = '2 00000  97.5663 343.3505 0020543 246.5020 55.8365  15.05249025 09'
-satellite = EarthSatellite(line1, line2, '3CAT-5A', ts)
+satellite = EarthSatellite(line1, line2, 'Enxaneta', ts)
 
 
 # Satellite ID 
@@ -112,8 +112,15 @@ map_string = '' + str(lat) + ',' + str(log)
 print(map_string)
 print('Elevation (km):', ele/1000)  
 visibility(satellite, now)
-webbrowser.open('https://www.google.com/maps/place/' + map_string) 
+#webbrowser.open('https://www.google.com/maps/place/' + map_string) 
 
+
+step = timedelta(days = 1);
+t = ts.from_datetime(datetime.now(timezone.utc) + step);
+location = wgs84.latlon(42.05138889, 0.72944444, 1620);
+passes = satellite.find_events(location, now, t, 10);
+print(int(passes[0][0].utc_datetime().timestamp()))
+print(passes[1][0])
 
 #show position in openstreetmap
 #map_string = 'mlat=' + str(lat)+ '&mlon=' + str(log) + '&zoom=7&layers=N'

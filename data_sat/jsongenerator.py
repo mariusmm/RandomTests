@@ -108,59 +108,59 @@ if __name__ == '__main__':
     ## When observational TLE are publised, use the following lines 
     
     # Satellite ID 
-    n = 47961
-    url = 'https://celestrak.com/NORAD/elements/gp.php?CATNR={}'.format(n)
-    filename = 'tle-CATNR-{}.txt'.format(n)
-    satellites = load.tle_file(url, filename=filename, reload=False)
-    satellite = satellites[0]
-    #print(satellite)
-    #print(satellite.epoch.utc_jpl())
-    
-    sat_epoch = satellite.epoch
-    last_try = ts.utc(2000)
-    
-    # If TLE data is too old, try to update it
-    if abs(sat_epoch - ts.now()) > 5:
-        # If already tried today, skip
-        if abs(ts.now() - last_try) > 1:
-            satellites = load.tle_file(url, filename=filename, reload=True)
-            last_try = ts.now()
+    sats = [47961, 25544]
+    satellites = dict()
+    for n in sats:
+        url = 'https://celestrak.com/NORAD/elements/gp.php?CATNR={}'.format(n)
+        filename = 'tle-CATNR-{}.txt'.format(n)
+        satellites[n] = load.tle_file(url, filename=filename, reload=False)
+
+    last_try = ts.now()
     
     # Calculate position at t = now
     #location = wgs84.latlon(42.05138889, 0.72944444, 1620);
     location = wgs84.latlon(41.726389, 1.829167, 238);
-    
-    while True:
-        # If TLE data is too old, try to update it
-        if abs(sat_epoch - ts.now()) > 5:
-            if abs(ts.now() - last_try) > 1:
-                satellites = load.tle_file(url, filename=filename, reload=True)
-                satellite = satellites[0]
-                sat_epoch = satellite.epoch
-                last_try = ts.now()
-    
-    
-        margin = timedelta(days = 1);
-        t = ts.from_datetime(datetime.now(timezone.utc) + margin);
-        # When the satellite will be visible from Manresa at 20º
-        passes = satellite.find_events(location, ts.now(), t, 20);
-        #print(passes[0][0].utc_datetime());
-        if (passes[1][0] == 0):
-            nextpass = int(passes[0][0].utc_datetime().timestamp());
-            
-        f = open('/home/tracker/app/resources/satellites.json','w')
-        json_data = "{\"satellites\":[{\"id\": " + str(n)
-        json_data += ",\"nextpass\": " + str(nextpass);
-        json_data += ",\"points\": [";
         
-        # Iterate to compute 95 points, completing ~1 orbit
-        for x in range (95):
-            step = timedelta(minutes = x)
-            t = ts.from_datetime(datetime.now(timezone.utc) + step)
-            [lat, log, ele] = getCoords(satellite, t)
-            map_string = '' + str(lat) + ', ' + str(log)
-            json_data += "{\"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + ", \"date:\" : " + str(int(t.utc_datetime().timestamp())) + "},"
-        json_data += "{}]}]}\r\n"
+    while True:
+        
+        f = open ('/home/tracker/app/resources/satellites.json','w')
+        json_data = "{\"satellites\":["
+        for n in satellites:
+            # If TLE data is too old, try to update it
+            # Difference between epoch times are in days
+            if abs(satellites[n][0].epoch - ts.now()) > 5:
+                 if abs(ts.now() - last_try) > 1:
+                     url = 'https://celestrak.com/NORAD/elements/gp.php?CATNR={}'.format(n)
+                     filename = 'tle-CATNR-{}.txt'.format(n)
+                     print("reloading TLE file: " + filename)
+                     satellites[n] = load.tle_file(url, filename=filename, reload=True)
+                     last_try = ts.now()
+        
+            satellite = satellites[n][0]
+            margin = timedelta(days = 1);
+            t = ts.from_datetime(datetime.now(timezone.utc) + margin);
+            # When the satellite will be visible from Manresa at 20º
+            passes = satellite.find_events(location, ts.now(), t, 20);
+
+            if (passes[1][0] == 0):
+                 nextpass = int(passes[0][0].utc_datetime().timestamp());
+
+            json_data += "{\"id\": " + str(n)
+            json_data += ",\"nextpass\": " + str(nextpass);
+            json_data += ",\"points\": [";
+            
+            # Iterate to compute 95 points, completing ~1 orbit
+            for x in range (95):
+                step = timedelta(minutes = x)
+                t = ts.from_datetime(datetime.now(timezone.utc) + step)
+                [lat, log, ele] = getCoords(satellite, t)
+                map_string = '' + str(lat) + ', ' + str(log)
+                json_data += "{\"lat\": "  + str(lat) + ", \"long\": " + str(log) + ", \"elevation\": " + str(int(ele)) + ", \"date:\" : " + str(int(t.utc_datetime().timestamp())) + "},"
+            # End of a satellite
+            json_data += "{}]},\r\n"
+
+        # End of the file
+        json_data += "{}]}\r\n"
 
         f.write(json_data)
         f.close()
